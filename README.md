@@ -49,12 +49,12 @@ DebeziumはKafkaのSourceコネクタとして使用する用法が一般的で�
 
 Kakfaにメッセージを送信するデータの発生元のことをProducer、メッセージを消費する送信先のことをConsumerと呼びます。
 
-![](images/1.png)
+![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/1.png?raw=true)
 
 ## SourceとSink
 外部システムとの連携用のフレームワークをKafkaコネクトと呼びます。Kafkaコネクトにおいて、外部システムと接続する部分をコネクタと呼び、Producer 側の コネクタ は Sourceコネクタ、Consumer 側の コネクタ は Sinkコネクタと、それぞれ呼ばれます。
 
-![](images/2.png)
+![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/2.png?raw=true)
 
 > DebeziumはKafkaのSourceコネクタです。
 
@@ -64,8 +64,7 @@ Kafkaが提供するエンタープライズ級の機能を使いたければ、
 
 > Debeziumサーバと言います
 
-![](images/3.png)
-
+![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/3.png?raw=true)
 
 随分とすっきりします。
 
@@ -203,7 +202,7 @@ id      name    description     weight
 
 Debeziumサーバのhttp clientは、指定したエンドポイントにREST+JSON形式で内容を送信してくれます。エンドポイントにIRISのRESTサービスを指定することで、IRISでその内容をパースし、必要な処理を実行(今回は単純にSQLの実行)しています。
 
-INSERT時には、[こちら](examples/sink-insert-request-example.json)、UPDATE時には、[こちら](examples/sink-update-request-example.json)のようなJSONがPOSTされます。
+INSERT時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-insert-request-example.json)、UPDATE時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-update-request-example.json)のようなJSONがPOSTされます。
 
 payload.opにPOSTGRESへの操作の値であるc:Create, u:Update, d:Delete, r:Readが伝わりますので、その内容に基づいて、IRISのRESTディスパッチャークラス(build/src/MyApp/Dispatcher.cls)にて、SQL文を組み立てて実行しています。
 

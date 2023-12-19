@@ -14,6 +14,6 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Producer["送信元"] --> Debezium((Debeziumサーバ))
+    Producer["送信元"] --> Debezium((Debezium</br>サーバ))
     Debezium --> Consumer["送信先"]
-```
+    ```
