@@ -1,0 +1,20 @@
+
+term #1
+tcpdumpによるネットワークのキャプチャ
+
+IRIS
+docker compose exec tcpdump tcpdump -A dst port 52773
+ or
+httpbin
+docker compose exec tcpdump tcpdump -A dst port 80
+
+term #2
+REST エンドポイントのテスト実行
+IRIS
+curl -X POST -H "Content-Type: application/json; charset=UTF-8" -d '{"Name":"あいうえお", "Age":"100"}' http://localhost:52873/csp/myapp/post
+ or
+httpbin
+curl -X POST -H "Content-Type: application/json; charset=UTF-8" -d '{"Name":"あいうえお", "Age":"100"}' http://localhost:8888/post
+
+curl -X POST -H "Content-Type: application/json; charset=UTF-8" -d @sink-insert-request-example.json http://localhost:52873/csp/myapp/post
+

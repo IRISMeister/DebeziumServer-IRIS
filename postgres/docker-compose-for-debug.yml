@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image:  debezium/example-postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  debezium-server:
+    image: debezium/server:2.4
+    hostname: debezium-server
+    ports:
+      - "8080:8080"
+      - "8083:8083"
+    volumes:
+      - ./application.properties:/debezium/conf/application.properties
+    depends_on:
+      - postgres
+      - iris
+      - httpbin
+
+  iris:
+    build:
+      context: ../build
+    hostname: iris
+    container_name: iris
+    command: --ISCAgent false --monitorCPF false
+    ports:
+    - "1972:1972"
+    - "52873:52773"
+    volumes:
+    - ../UserCPF:/home/irisowner/cpf
+    environment:
+    - TZ=JST-9
+    - ISC_CPF_MERGE_FILE=/home/irisowner/cpf/merge.cpf
+
+  httpbin:
+    image: kennethreitz/httpbin
+    container_name: httpbin
+    ports:
+      - "8888:80"
+
+  tcpdump:
+    build:
+      context: ../tcpdump
+    tty: true
+    network_mode: "container:iris"
+    #network_mode: "container:httpbin"
+    depends_on:
+      - iris
+      - httpbin

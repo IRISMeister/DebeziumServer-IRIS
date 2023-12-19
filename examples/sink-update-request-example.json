@@ -1,0 +1,223 @@
+{
+    "payload": {
+        "after": {
+            "id": 10001,
+            "order_date": 16816,
+            "product_id": 102,
+            "purchaser": 1001,
+            "quantity": 4
+        },
+        "before": {
+            "id": 10001,
+            "order_date": 16816,
+            "product_id": 102,
+            "purchaser": 1001,
+            "quantity": 1
+        },
+        "op": "u",
+        "source": {
+            "connector": "postgresql",
+            "db": "postgres",
+            "lsn": 34461648,
+            "name": "debezium_cdc_topic",
+            "schema": "inventory",
+            "sequence": "[null,\"34461648\"]",
+            "snapshot": "false",
+            "table": "orders",
+            "ts_ms": 1692840574254,
+            "txId": 768,
+            "version": "2.2.0.Alpha3",
+            "xmin": null
+        },
+        "transaction": null,
+        "ts_ms": 1692840574378
+    },
+    "schema": {
+        "fields": [
+            {
+                "field": "before",
+                "fields": [
+                    {
+                        "default": 0,
+                        "field": "id",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "order_date",
+                        "name": "io.debezium.time.Date",
+                        "optional": false,
+                        "type": "int32",
+                        "version": 1
+                    },
+                    {
+                        "field": "purchaser",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "quantity",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "product_id",
+                        "optional": false,
+                        "type": "int32"
+                    }
+                ],
+                "name": "debezium_cdc_topic.inventory.orders.Value",
+                "optional": true,
+                "type": "struct"
+            },
+            {
+                "field": "after",
+                "fields": [
+                    {
+                        "default": 0,
+                        "field": "id",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "order_date",
+                        "name": "io.debezium.time.Date",
+                        "optional": false,
+                        "type": "int32",
+                        "version": 1
+                    },
+                    {
+                        "field": "purchaser",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "quantity",
+                        "optional": false,
+                        "type": "int32"
+                    },
+                    {
+                        "field": "product_id",
+                        "optional": false,
+                        "type": "int32"
+                    }
+                ],
+                "name": "debezium_cdc_topic.inventory.orders.Value",
+                "optional": true,
+                "type": "struct"
+            },
+            {
+                "field": "source",
+                "fields": [
+                    {
+                        "field": "version",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "connector",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "name",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "ts_ms",
+                        "optional": false,
+                        "type": "int64"
+                    },
+                    {
+                        "default": "false",
+                        "field": "snapshot",
+                        "name": "io.debezium.data.Enum",
+                        "optional": true,
+                        "parameters": {
+                            "allowed": "true,last,false,incremental"
+                        },
+                        "type": "string",
+                        "version": 1
+                    },
+                    {
+                        "field": "db",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "sequence",
+                        "optional": true,
+                        "type": "string"
+                    },
+                    {
+                        "field": "schema",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "table",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "txId",
+                        "optional": true,
+                        "type": "int64"
+                    },
+                    {
+                        "field": "lsn",
+                        "optional": true,
+                        "type": "int64"
+                    },
+                    {
+                        "field": "xmin",
+                        "optional": true,
+                        "type": "int64"
+                    }
+                ],
+                "name": "io.debezium.connector.postgresql.Source",
+                "optional": false,
+                "type": "struct"
+            },
+            {
+                "field": "op",
+                "optional": false,
+                "type": "string"
+            },
+            {
+                "field": "ts_ms",
+                "optional": true,
+                "type": "int64"
+            },
+            {
+                "field": "transaction",
+                "fields": [
+                    {
+                        "field": "id",
+                        "optional": false,
+                        "type": "string"
+                    },
+                    {
+                        "field": "total_order",
+                        "optional": false,
+                        "type": "int64"
+                    },
+                    {
+                        "field": "data_collection_order",
+                        "optional": false,
+                        "type": "int64"
+                    }
+                ],
+                "name": "event.block",
+                "optional": true,
+                "type": "struct",
+                "version": 1
+            }
+        ],
+        "name": "debezium_cdc_topic.inventory.orders.Envelope",
+        "optional": false,
+        "type": "struct",
+        "version": 1
+    }
+}

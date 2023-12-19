@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: quay.io/debezium/example-mysql:2.4
+    hostname: mysql
+    ports:
+     - 3306:3306
+    environment:
+     - MYSQL_ROOT_PASSWORD=debezium
+     - MYSQL_USER=mysqluser
+     - MYSQL_PASSWORD=mysqlpw
+
+  debezium-server:
+    image: debezium/server:2.4
+    hostname: debezium-server
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./application.properties:/debezium/conf/application.properties
+    depends_on:
+      - mysql
+      - iris
+
+  iris:
+    build:
+      context: ../build
+    hostname: iris
+    container_name: iris
+    command: --ISCAgent false --monitorCPF false
+    ports:
+    - "1972:1972"
+    - "52873:52773"
+    volumes:
+    - ../UserCPF:/home/irisowner/cpf
+    environment:
+    - TZ=JST-9
+    - ISC_CPF_MERGE_FILE=/home/irisowner/cpf/merge.cpf
