@@ -6,7 +6,7 @@ Debeziumをご存じでしょうか？
 
 ご興味がありましたら、グローバルサミット2023の[録画アーカイブ](https://www.intersystems.com/near-real-time-analytics-with-intersystems-iris-debezium-change-data-capture-intersystems/)をご覧ください。
 
-> [FQA](https://debezium.io/documentation/faq/)によると、"dee-BEE-zee-uhm"(ディビジウム..ですかね)と読むそうです。元素周期表のように複数のDB(s)を束ねる、というニュアンスみたいですです。
+> [FQA](https://debezium.io/documentation/faq/)によると、"dee-BEE-zee-uhm"(ディビジウム..ですかね)と読むそうです。元素周期表のように複数のDB(s)を束ねる、というニュアンスみたいです。
 
 CDC(Change data capture)という分野のソフトウェアです。
 
@@ -58,7 +58,7 @@ Kakfaにメッセージを送信するデータの発生元のことをProducer�
 ![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/1.png?raw=true)
 
 ## SourceとSink
-外部システムとの連携用のフレームワークをKafkaコネクトと呼びます。Kafkaコネクトにおいて、外部システムと接続する部分をコネクタと呼び、Producer 側の コネクタ は Sourceコネクタ、Consumer 側の コネクタ は Sinkコネクタと、それぞれ呼ばれます。
+外部システムとの連携用のフレームワークをKafkaコネクトと呼びます。Kafkaコネクトにおいて、外部システムと接続する部分をコネクタと呼び、Producer 側の コネクタ は Sourceコネクタ、Consumer 側の コネクタ は Sinkコネクタと、それぞれ呼びます。
 
 ![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/2.png?raw=true)
 
@@ -74,7 +74,7 @@ Kafkaが提供するエンタープライズ級の機能を使いたければ、
 
 随分とシンプルな構成になります。
 
-KafkaのSinkコネクタを経由しなくても、Debezium自身が様々な[送信先](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_sink_configuration)に対応しています。Debeziumから見ると、Kafkaは送信先のひとつです。
+KafkaのSinkコネクタを経由しなくても、Debezium自身が様々な[送信先](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_sink_configuration)に対応しています。Debeziumから見ると、Kafkaは送信先のひとつという位置づけです。
 
 例えば、「POSTGRES上でのデータ更新をCDCして、その内容をhttp serverに送信」したい場合、
 [POSTGRES用のSourceコネクタ](https://debezium.io/documentation/reference/stable/connectors/postgresql.html)と、[http Client](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_http_client)を使うことになります。
@@ -86,7 +86,7 @@ Debeziumは、Sourceとして[これら](https://debezium.io/documentation/refer
 # Debezium Serverの起動
 
 今回使用するソースコード一式は[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS)にあります。
-IRIS環境はコミュニティエディションにネームスペースMYAPPの作成と、3個の空のテーブル作成(build/sql/01_createtable.sqlを使用)を行ったものになります。
+IRIS環境はコミュニティエディションにネームスペースMYAPPの作成と、3個の空のテーブル作成([01_createtable.sql](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/build/sql/01_createtable.sql)を使用)を行ったものになります。
 
 ```
 $ git clone https://github.com/IRISMeister/DebeziumServer-IRIS
@@ -208,7 +208,7 @@ Debezium Serverのhttp clientは、指定したエンドポイントにREST+JSON
 
 INSERT時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-insert-request-example.json)、UPDATE時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-update-request-example.json)のようなJSONがPOSTされます。
 
-payload.opにPOSTGRESへの操作の値であるc:Create, u:Update, d:Delete, r:Readが伝わりますので、その内容に基づいて、IRISのRESTディスパッチャークラス(build/src/MyApp/Dispatcher.cls)にて、SQL文を組み立てて実行しています。
+payload.opにPOSTGRESへの操作の値であるc:Create, u:Update, d:Delete, r:Readが伝わりますので、その内容に基づいて、IRISのRESTディスパッチャークラス([Dispatcher.cls](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/build/src/MyApp/Dispatcher.cls))にて、SQL文を組み立てて実行しています。
 
 r:Readは、初回接続時に実行されるスナップショット取得作業の際に既存のレコード群を読み込み(READ)、それらが送信される場合に使用されます。詳細は[こちら](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-snapshots)をご覧ください。
 
@@ -231,7 +231,7 @@ docker compose start debezium-server
 >「あれ、落ちるんだ」と思いましたが、フェールセーフ思想なのだと思います。
 > 対障害性はKafka Connectに管理してもらう前提になっているためだと思います。
 
-MYSQLもほぼ同じ操作で動作確認が出来ます(./mysqlに必要なファイルがあります。mysql.txtを参照ください)。
+MYSQLもほぼ同じ操作で動作確認が出来ます。./mysqlに必要なファイルがあります。mysql.txtを参照ください。
 
 また、今回は、レコードを同期しているだけですが、GS2023のように組み込みBIのキューブを作成して分析用途にしたり、何某かのビジネスロジックを実行したり、インターオペラビリティ機能に連動させたりといった応用が考えられます。
 
