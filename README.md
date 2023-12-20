@@ -1,14 +1,18 @@
 # Debezium ご存じでしょうか
 
-Debeziumをご存じでしょうか？グローバルサミット2023にて、Debeziumを題材としたセッション「Near Real Time Analytics with InterSystems IRIS & Debezium Change Data Capture」がありましたので、ご覧になられた方もおられるかと思います。
+Debeziumをご存じでしょうか？
 
-> ご興味がありましたら、グローバルサミット2023の[録画アーカイブ](https://www.intersystems.com/near-real-time-analytics-with-intersystems-iris-debezium-change-data-capture-intersystems/)をご覧ください。
+グローバルサミット2023にて、Debeziumを題材としたセッション「Near Real Time Analytics with InterSystems IRIS & Debezium Change Data Capture」がありましたので、ご覧になられた方もおられるかと思います。
+
+ご興味がありましたら、グローバルサミット2023の[録画アーカイブ](https://www.intersystems.com/near-real-time-analytics-with-intersystems-iris-debezium-change-data-capture-intersystems/)をご覧ください。
+
+> [FQA](https://debezium.io/documentation/faq/)によると、"dee-BEE-zee-uhm"(ディビジウム..ですかね)と読むそうです。元素周期表のように複数のDB(s)を束ねる、というニュアンスみたいですです。
 
 CDC(Change data capture)という分野のソフトウェアです。
 
-外部データベースでの変更を追跡して、自身のシステムに反映したいという要望は、インターオペラビリティ機能導入の動機のひとつになっています。一般的には、定期的にSELECT文のポーリングをおこなって、変更対象となるレコード群(差分取得。対象が少なければ全件取得)を外部システムから取得する方法が、お手軽で汎用性も高いですが、タイムスタンプや更新の都度に増加するようなバージョンフィールドが元テーブルに存在しない場合、どうしても、各ポーリング間で重複や見落としがでないように、受信側で工夫する必要があります。また、この方法ではデータの削除を反映することはできませんので、代替案として削除フラグを採用するといったアプリケーションでの対応が必要になります。
+外部データベースでの変更を追跡して、IRISに反映したいという要望は、インターオペラビリティ機能導入の動機のひとつになっています。一般的には、定期的にSELECT文のポーリングをおこなって、変更対象となるレコード群(差分。対象が少なければ全件)を外部システムから取得する方法が、お手軽で汎用性も高いですが、タイムスタンプや更新の都度に増加するようなバージョンフィールドが元テーブルに存在しない場合、どうしても、各ポーリング間で重複や見落としがでないように、受信側で工夫する必要があります。また、この方法ではデータの削除を反映することはできませんので、代替案として削除フラグを採用するといったアプリケーションでの対応が必要になります。
 
-CDCは、DBMSのトランザクションログをキャプチャすることで、この課題への解決策を提供しています。[Debezium](https://github.com/debezium/debezium/blob/main/README_JA.md)はIBM, RedHatが中心となっているCDCのオープンソースプロジェクトです。
+CDCは、DBMSのトランザクションログをキャプチャすることで、この課題への解決策を提供しています。[Debezium](https://github.com/debezium/debezium/blob/main/README_JA.md)はRedHatが中心となっているCDCのオープンソースプロジェクトです。
 
 # CDCの何が良いのか
 
@@ -18,21 +22,23 @@ CDCにはいくつかの利点があります。
 
 - DELETEも反映できる
 
-- ソースになるDBMSに対して非侵襲的
+- SourceになるDBMSに対して非侵襲的
 
-    > テーブル定義を変更したり専用のテーブルを作成しなくて済む。パフォーマンスへの影響が軽微。
+    テーブル定義を変更したり専用のテーブルを作成しなくて済む。パフォーマンスへの影響が軽微。
+
+    > 先進医療っぽい表現ですね。対象に強要する影響が軽微というニュアンスだと思います。
 
 - 受信側(アプリケーション側)の設計が楽
 
-下記は受信側の仕組みに依存する話ですが、例えばIRISで受信する場合
+下記は受信側の仕組みに依存する話ですが、例えばIRISのRESTサービスで受信する場合
 
 - ひとつのハンドラ(Restのディスパッチクラス)で、複数のテーブルを処理できる
 
-    > このことはSQLインバウンドサービスがテーブル単位であることと対照的です
+    このことはSQLインバウンドサービスがテーブル単位であることと対照的です。
 
-一方、トランザクションログのメカニズムは各DBMS固有なので、DBMSやそのバージョン毎に振る舞い、特性が異なる可能性があるというマイナス面があります。
+一方、トランザクションログのメカニズムは各DBMS固有なので、DBMSやそのバージョン毎にセットアップ手順、振る舞い、特性が異なる可能性があるというマイナス面があります。
 
-> セットアップ作業は、SQLインバウンドアダプタほど簡単ではありません
+> セットアップ作業は、SQLインバウンドアダプタほど簡単ではありません。
 
 # Kafkaのコネクタとしての用法
 DebeziumはKafkaのSourceコネクタとして使用する用法が一般的です。
@@ -60,26 +66,24 @@ Kakfaにメッセージを送信するデータの発生元のことをProducer�
 
 # Debeziumのスタンドアロン環境
 
-Kafkaが提供するエンタープライズ級の機能を使いたければ、Kafkaの構成・運用を含めて検討する価値があります。一方、そうでない場合、Debeziumを[単体](https://debezium.io/documentation/reference/stable/operations/debezium-server.html)で動作させることが出来ます。
+Kafkaが提供するエンタープライズ級の機能を使いたければ、Kafkaの構成・運用を含めて検討する価値があります。一方、そうでない場合、Debeziumを[単体のサーバ](https://debezium.io/documentation/reference/stable/operations/debezium-server.html)で動作させることが出来ます。
 
-> Debeziumサーバと言います
+> Debezium Serverと言います。その他の選択肢として、自作のJavaアプリケーションに組み込む方法もあります。
 
 ![](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/images/3.png?raw=true)
 
-随分とすっきりします。
+随分とシンプルな構成になります。
 
-KafkaのSinkコネクタを経由しなくても、Debezium自身が様々な[送信先](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_sink_configuration)に対応しています。
-
-> Debeziumから見ると、Kafkaは送信先のひとつです。
+KafkaのSinkコネクタを経由しなくても、Debezium自身が様々な[送信先](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_sink_configuration)に対応しています。Debeziumから見ると、Kafkaは送信先のひとつです。
 
 例えば、「POSTGRES上でのデータ更新をCDCして、その内容をhttp serverに送信」したい場合、
 [POSTGRES用のSourceコネクタ](https://debezium.io/documentation/reference/stable/connectors/postgresql.html)と、[http Client](https://debezium.io/documentation/reference/stable/operations/debezium-server.html#_http_client)を使うことになります。
 
-Debeziumは[これら](https://debezium.io/documentation/reference/stable/connectors/index.html)のDBMSに対応しています。
+Debeziumは、Sourceとして[これら](https://debezium.io/documentation/reference/stable/connectors/index.html)のDBMSに対応しています。
 
-> 残念ながらIRISはソースになれません。IRISからIRISへのデータの同期であれば非同期ミラリングがお勧めです。
+> 残念ながらIRISはSourceになれません。IRISからIRISへのデータの同期であれば非同期ミラリングがお勧めです。
 
-# Debeziumサーバの起動
+# Debezium Serverの起動
 
 今回使用するソースコード一式は[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS)にあります。
 IRIS環境はコミュニティエディションにネームスペースMYAPPの作成と、3個の空のテーブル作成(build/sql/01_createtable.sqlを使用)を行ったものになります。
@@ -104,10 +108,9 @@ postgres-postgres-1          debezium/example-postgres   "docker-entrypoint.sh p
 
 # 動作確認
 
-初期状態を確認します。起動直後に、POSTGRES上の既存のレコード群がIRISに送信されますのでそれを確認します。
-> 端末を2個ひらいておくと便利です。以下(端末1)をPOSTGRESの, (端末2)をIRISのSQL実行に使用します。
+初期状態を確認します。起動直後に、POSTGRES上の既存のレコード群がIRISに送信されますのでそれを確認します。端末を2個ひらいておくと便利です。以下(端末1)をPOSTGRESの, (端末2)をIRISのSQL実行に使用します。
 
-(端末1)
+(端末1 PG)
 ```
 $ docker compose exec -u postgres postgres psql
 psql (15.2 (Debian 15.2-1.pgdg110+1))
@@ -151,18 +154,19 @@ $
 
 IRIS上のレコードは下記のコマンドで確認できます。POSTGRES上のレコードと同じになっているはずです。
 
-(端末2)
+(端末2 IRIS)
 ```
 $ docker compose exec iris iris sql iris -Umyapp
 [SQL]MYAPP>>set selectmode=odbc
 [SQL]MYAPP>>select * from inventory.orders
+         出力は省略
 [SQL]MYAPP>>select * from inventory.products
 [SQL]MYAPP>>select * from inventory.customers
 ```
 
 次に、POSTGRESで各種DMLを実行します。
 
-(端末1)
+(端末1 PG)
 ```
 update inventory.orders set quantity=200 where id=10001;
 UPDATE 1
@@ -176,7 +180,7 @@ UPDATE 1
 
 その結果がIRISに伝わり反映されます。
 
-(端末2)
+(端末2 IRIS)
 ```
 [SQL]MYAPP>>select * from inventory.orders
 3.      select * from inventory.orders
@@ -200,16 +204,16 @@ id      name    description     weight
 
 # IRIS側の仕組み
 
-Debeziumサーバのhttp clientは、指定したエンドポイントにREST+JSON形式で内容を送信してくれます。エンドポイントにIRISのRESTサービスを指定することで、IRISでその内容をパースし、必要な処理を実行(今回は単純にSQLの実行)しています。
+Debezium Serverのhttp clientは、指定したエンドポイントにREST+JSON形式で内容を送信してくれます。エンドポイントにIRISのRESTサービスを指定することで、IRISでその内容をパースし、必要な処理を実行(今回は単純にSQLの実行)しています。
 
 INSERT時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-insert-request-example.json)、UPDATE時には、[こちら](https://github.com/IRISMeister/DebeziumServer-IRIS/blob/main/examples/sink-update-request-example.json)のようなJSONがPOSTされます。
 
 payload.opにPOSTGRESへの操作の値であるc:Create, u:Update, d:Delete, r:Readが伝わりますので、その内容に基づいて、IRISのRESTディスパッチャークラス(build/src/MyApp/Dispatcher.cls)にて、SQL文を組み立てて実行しています。
 
-> r:Readは、初回接続時に実行されるスナップショット取得作業の際に既存のレコード群を読み込み(READ)、それらが送信される場合に使用されます。詳細は[こちら](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-snapshots)をご覧ください。
+r:Readは、初回接続時に実行されるスナップショット取得作業の際に既存のレコード群を読み込み(READ)、それらが送信される場合に使用されます。詳細は[こちら](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-snapshots)をご覧ください。
 
-# Debeziumサーバについて
-Debeziumサーバの詳細は[公式ドキュメント](https://debezium.io/documentation/reference/stable/operations/debezium-server.html)をご覧ください。
+# Debezium Serverについて
+Debezium Serverの詳細は[公式ドキュメント](https://debezium.io/documentation/reference/stable/operations/debezium-server.html)をご覧ください。
 
 ドキュメントを見ると大量のコーディング例(Java)と構成例が載っており、これ全部理解してプログラムを書かないと使えないのかと思ってしまいますが、幸いコンテナイメージとして[公開](https://hub.docker.com/r/debezium/server)されていますので、今回はそれを利用しています。ソースコードも[公開](https://github.com/debezium/debezium-server)されています。
 
@@ -217,14 +221,17 @@ Debeziumサーバの詳細は[公式ドキュメント](https://debezium.io/docu
 
 # その他
 
-Debeziumサーバの欠点といいますか特徴として、送信先が未達になると直ぐ落ちるというのがあります。例えばIRISが停止すると、Debeziumサーバのコンテナが停止してしまいます。それらの機能はKafka本体にマネージしてもらう前提になっているためだと思います。ただ、どこまで処理したかをO/Sファイル(本例ではdata/offsets.dat)に保存していますので、IRIS起動後に、Debeziumサーバのコンテナを再開すれば、停止中に発生した更新をキャプチャしてくれます。
+Debezium Serverの欠点といいますか特徴として、接続先が未達になると直ぐ落ちるというのがあります。例えばIRISが停止すると、Debezium Serverが停止(今回の構成では、コンテナが停止)してしまいます。ただ、どこまで処理したかをO/Sファイル(本例ではdata/offsets.dat)に保存していますので、IRIS起動後に、Debezium Serverのコンテナを再開すれば、停止中に発生した更新をキャプチャしてくれます。
 
-> 本例であればコンテナ再開は下記コマンドで行います
-> ```
-> docker compose up -d debezium-server
-> ```
+停止したコンテナの再開は下記コマンドで行います。
+```
+docker compose start debezium-server
+```
+
+>「あれ、落ちるんだ」と思いましたが、フェールセーフ思想なのだと思います。
+> 対障害性はKafka Connectに管理してもらう前提になっているためだと思います。
 
 MYSQLもほぼ同じ操作で動作確認が出来ます(./mysqlに必要なファイルがあります。mysql.txtを参照ください)。
 
-また、今回は、SQLを実行しているだけですが、何某かのビジネスロジックを実行したり、インターオペラビリティ機能に連動させたりといった応用も考えられます。
+また、今回は、レコードを同期しているだけですが、GS2023のように組み込みBIのキューブを作成して分析用途にしたり、何某かのビジネスロジックを実行したり、インターオペラビリティ機能に連動させたりといった応用が考えられます。
 
