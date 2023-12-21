@@ -1,0 +1,25 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "~/jdbc/postgresql-42.7.1.jar"
+    ],
+    "[java]": {
+        "editor.pasteAs.enabled": false
+     },
+     "intersystems.servers": {
+        "iris": {
+            "webServer": {
+                "scheme": "http",
+                "host": "localhost",
+                "port": 52873
+            },
+            "username": "_SYSTEM",
+            "password": "SYS"
+        }
+    },
+    "objectscript.conn": {
+        "server": "iris",
+        "ns": "MYAPP",
+        "active": true
+    }
+}

@@ -6,7 +6,7 @@ Debeziumをご存じでしょうか？
 
 ご興味がありましたら、グローバルサミット2023の[録画アーカイブ](https://www.intersystems.com/near-real-time-analytics-with-intersystems-iris-debezium-change-data-capture-intersystems/)をご覧ください。
 
-> [FQA](https://debezium.io/documentation/faq/)によると、"dee-BEE-zee-uhm"(ディビジウム..ですかね)と読むそうです。元素周期表のように複数のDB(s)を束ねる、というニュアンスみたいです。
+> [FAQ](https://debezium.io/documentation/faq/)によると、"dee-BEE-zee-uhm"(ディビジウム..ですかね)と読むそうです。元素周期表のように複数のDB(s)を束ねる、というニュアンスみたいです。
 
 CDC(Change data capture)という分野のソフトウェアです。
 

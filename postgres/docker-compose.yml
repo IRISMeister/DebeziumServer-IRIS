@@ -31,6 +31,19 @@ services:
     - "52873:52773"
     volumes:
     - ../UserCPF:/home/irisowner/cpf
+    - ../python:/home/irisowner/python
+    - ../share:/home/irisowner/share
     environment:
     - TZ=JST-9
     - ISC_CPF_MERGE_FILE=/home/irisowner/cpf/merge.cpf
+    depends_on:
+      - busybox
+
+  # make share folder writable
+  busybox:
+    image: busybox
+    command:
+      chmod 777 /share
+
+    volumes:
+    - ../share:/share

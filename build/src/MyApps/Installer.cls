@@ -65,6 +65,12 @@ ClassMethod setup(ByRef tVars) As %Status
     Set tSC = ##Class(Security.Applications).Modify(webapp,.props)
     $$$ThrowOnError(tSC)
 
+    #; enable callin. This is required only if you want to use emb python in callin manner.
+    kill prop
+    Set tSC=##class(Security.Services).Get("%service_callin",.prop)
+    Set prop("Enabled")=1
+    Set tSC=##class(Security.Services).Modify("%service_callin",.prop)
+
     Set $NAMESPACE=oldns
 
   } Catch(e) {

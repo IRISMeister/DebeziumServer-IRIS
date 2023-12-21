@@ -12,7 +12,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 
 ClassMethod Post() As %Status
 {
-#DEFINE DEBUGLOG 1
+    //#DEFINE DEBUGLOG 1
 
     Try {
         Set %response.ContentType="application/json"
@@ -82,6 +82,18 @@ ClassMethod Post() As %Status
         ElseIf table="customers" {
             if (op="c")!(op="u")!(op="r") {
                 &SQL(INSERT OR UPDATE inventory.customers (id, first_name, last_name, email) values (:after.id,:after."first_name",:after."last_name",:after.email))
+                If SQLCODE { throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE,%msg) }
+            }
+        }
+        ElseIf table="bench" {  // 処理時間計測用テーブル
+            if (op="c")!(op="u")!(op="r") {
+                Set ts=$SYSTEM.SQL.Functions.DATEADD("mcs",after.ts,"1970-01-01")
+                #; 時間差計測のため、POSTGRESのts2値は使用しない。
+                &SQL(INSERT OR UPDATE inventory.bench (pkey, ts, ts2) values (:after.pkey,:ts,CURRENT_TIMESTAMP(6)))
+                If SQLCODE { throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE,%msg) }
+            }
+            ElseIf (op="d") {
+                &SQL(DELETE FROM inventory.bench WHERE pkey=:before.pkey)
                 If SQLCODE { throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE,%msg) }
             }
         }

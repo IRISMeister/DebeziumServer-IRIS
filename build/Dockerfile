@@ -8,6 +8,7 @@ RUN apt -y update && DEBIAN_FRONTEND=noninteractive apt -y install language-pack
 USER $ISC_PACKAGE_IRISUSER
 
 RUN echo 'export LANG=ja_JP.UTF-8' >> ~/.bashrc && echo 'export LANGUAGE="ja_JP:ja"' >> ~/.bashrc 
+RUN pip install pandas matplotlib
 
 ARG COMMIT_ID="unknown"
 

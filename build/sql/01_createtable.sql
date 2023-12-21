@@ -4,3 +4,5 @@ CREATE TABLE inventory.products (id INTEGER PRIMARY KEY, name VARCHAR(255), desc
 GO
 CREATE TABLE inventory.customers (id INTEGER PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255), email VARCHAR(255))
 GO
+CREATE TABLE inventory.bench (pkey INTEGER Primary Key, ts TIMESTAMP, ts2 TIMESTAMP)
+GO
